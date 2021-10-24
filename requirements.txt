@@ -9,7 +9,7 @@ cycler==0.10.0
 DateTime==4.3
 flatbuffers==1.12
 gast==0.4.0
-google-auth==2.3.0
+google-auth==2.3.0pip
 google-auth-oauthlib==0.4.6
 google-pasta==0.2.0
 grpcio==1.41.0

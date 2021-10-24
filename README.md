@@ -6,4 +6,16 @@ Instructions on how to compile and use your code should be created in the reposi
 * The role of each file.
 * How to run your code.
 * Necessary packages or header files (e.g. numpy, scipy, etc.).
+    * datetime
+    * numpy
+    * scipy
+    * matplotlib
+    * numpy
+    * pandas
+    * pandas
+    * h5py
+    * sklearn
+    * tensorflow
+    * keras
+    * torch
 * The recommend format for README file is markdown (.md). 
