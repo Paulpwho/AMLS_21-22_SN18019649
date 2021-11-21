@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn import datasets, linear_model
 from sklearn.metrics import mean_squared_error, r2_score, confusion_matrix, accuracy_score, classification_report
 from PIL import Image
+from sklearn.preprocessing import MinMaxScaler
 
 image_h = 512
 image_w = 512
@@ -40,8 +41,12 @@ Y = mri_labels["label"]
 
 xTrain, xTest, yTrain, yTest = train_test_split(X, Y, random_state=0)
 
-
 # [3]
+scaler = MinMaxScaler()
+xTrain = scaler.fit_transform(xTrain)
+xTest = scaler.transform(xTest)
+
+
 def logRegrPredict(xTrain, yTrain, xTest):
     logreg = LogisticRegression(solver='lbfgs')
     logreg.fit(xTrain, yTrain)
@@ -69,5 +74,27 @@ print("Done")
 
 '''
 
+# Plotting a histogram of the data [4]
+df = pd.concat([Y, pd.DataFrame(X)], axis=1)
+no_tumour = df.loc[df.label==1, 0]
+tumour = df.loc[df.label==0, 0]
+kwargs = dict(alpha=0.5, bins=100)
+
+plt.hist(no_tumour, **kwargs, color='g', label='no_tumour')
+plt.hist(tumour, **kwargs, color='b', label='tumour')
+plt.legend();
+
+# Historgram of data with MinMaxScaler
+yTrain = yTrain.to_numpy()
+pd.concat([pd.DataFrame(yTrain), pd.DataFrame(xTrain)], axis=1)
+no_tumour = df.loc[df.label==1, 0]
+tumour = df.loc[df.label==0, 0]
+kwargs = dict(alpha=0.5, bins=100)
+
+plt.hist(no_tumour, **kwargs, color='g', label='no_tumour')
+plt.hist(tumour, **kwargs, color='b', label='tumour')
+plt.legend();
+
 # [2] https://thispointer.com/count-values-greater-than-a-value-in-2d-numpy-array-matrix
 # [3] From Task 3.9 lab exercises
+# [4] https://www.machinelearningplus.com/plots/matplotlib-histogram-python-examples/
