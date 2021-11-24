@@ -95,6 +95,25 @@ plt.hist(no_tumour, **kwargs, color='g', label='no_tumour')
 plt.hist(tumour, **kwargs, color='b', label='tumour')
 plt.legend();
 
+finalDf = pd.concat([pd.DataFrame(X), Y], axis=1)
+
+fig = plt.figure(figsize=(8, 8))
+ax = fig.add_subplot(1, 1, 1)
+ax.set_xlabel(0, fontsize=15)
+ax.set_ylabel(0, fontsize=15)
+ax.set_title('Thresholding @ 127', fontsize=20)
+targets = [0, 1]
+colors = ['r', 'g']
+for target, color in zip(targets, colors):
+    indicesToKeep = finalDf['label'] == target
+    ax.scatter(finalDf.loc[indicesToKeep, 0]
+               , finalDf.loc[indicesToKeep, 0]
+               , c=color
+               , s=50)
+ax.legend(["tumour", "no tumour"])
+ax.grid()
+fig.show()
+
 # [2] https://thispointer.com/count-values-greater-than-a-value-in-2d-numpy-array-matrix
 # [3] From Task 3.9 lab exercises
 # [4] https://www.machinelearningplus.com/plots/matplotlib-histogram-python-examples/
