@@ -1,5 +1,6 @@
 import pandas as pd
 from skimage import io
+from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, LogisticRegression
 import numpy as np
@@ -34,17 +35,72 @@ im = im[:, :, :, 1]
 num_samples = len(mri_labels["file_name"])
 im = np.reshape(im, (num_samples, -1))
 
-# Count the number of values oves 127 for each sample
-count = np.count_nonzero(im > 127, axis=1)  # [2]
-X = pd.DataFrame(count)
-Y = mri_labels["label"]
-
-xTrain, xTest, yTrain, yTest = train_test_split(X, Y, random_state=0)
+print("Applying scaler")
 
 # [3]
 scaler = MinMaxScaler()
-xTrain = scaler.fit_transform(xTrain)
-xTest = scaler.transform(xTest)
+im = scaler.fit_transform(im)
+
+
+# PCA from [5], [6]
+def PCAPredict(X, k):
+    '''
+    Inputs
+        X: dataset;
+        k: number of Components.
+
+    Return
+        SValue: The singular values corresponding to each of the selected components.
+        Variance: The amount of variance explained by each of the selected components.
+                It will provide you with the amount of information or variance each principal component holds after projecting the data to a lower dimensional subspace.
+        Vcomp: The estimated number of components.
+    '''
+
+    # the bulit-in function for PCA,
+    # where n_clusters is the number of clusters.
+    pca = PCA(n_components=k)
+
+    # fit the algorithm with dataset
+    principalComponents = pca.fit_transform(X)
+
+    return principalComponents
+
+
+# project
+k1 = 2
+Vcomponent = PCAPredict(im, k1)
+print(Vcomponent)
+
+X = pd.DataFrame(Vcomponent)
+Y = mri_labels["label"]
+
+finalDf = pd.concat([X, Y], axis=1)
+print(finalDf)
+
+fig = plt.figure(figsize=(8, 8))
+ax = fig.add_subplot(1, 1, 1)
+ax.set_xlabel('Principal Component 1', fontsize=15)
+ax.set_ylabel('Principal Component 2', fontsize=15)
+ax.set_title('2 component PCA', fontsize=20)
+targets = ['Tumour', 'No tumour']
+colors = ['r', 'g']
+for target, color in zip(targets, colors):
+    indicesToKeep = finalDf['label'] == target
+    ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
+               , finalDf.loc[indicesToKeep, 'principal component 2']
+               , c=color
+               , s=50)
+ax.legend(targets)
+ax.grid()
+
+print("done")
+
+'''
+
+xTrain, xTest, yTrain, yTest = train_test_split(X, Y, random_state=0)
+
+
+
 
 
 def logRegrPredict(xTrain, yTrain, xTest):
@@ -59,6 +115,7 @@ print(yPred)
 print(confusion_matrix(yTest, yPred))
 print('Accuracy on test set: ' + str(accuracy_score(yTest, yPred)))
 print(classification_report(yTest, yPred))  # text report showing the main classification metrics
+'''
 
 '''
 X = pd.DataFrame(im)
@@ -73,7 +130,7 @@ print("Done")
 # [1] https://scikit-image.org/docs/dev/user_guide/getting_started.html
 
 '''
-
+'''
 # Plotting a histogram of the data [4]
 df = pd.concat([Y, pd.DataFrame(X)], axis=1)
 no_tumour = df.loc[df.label==1, 0]
@@ -94,7 +151,10 @@ kwargs = dict(alpha=0.5, bins=100)
 plt.hist(no_tumour, **kwargs, color='g', label='no_tumour')
 plt.hist(tumour, **kwargs, color='b', label='tumour')
 plt.legend();
+'''
 
 # [2] https://thispointer.com/count-values-greater-than-a-value-in-2d-numpy-array-matrix
 # [3] From Task 3.9 lab exercises
 # [4] https://www.machinelearningplus.com/plots/matplotlib-histogram-python-examples/
+# [5] From Task 5.14 lab exercises
+# [6] https://towardsdatascience.com/pca-using-python-scikit-learn-e653f8989e60
