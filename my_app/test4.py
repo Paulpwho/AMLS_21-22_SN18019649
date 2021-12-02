@@ -129,7 +129,7 @@ axes[1].set_title('histogram of gray values')
 fig.show()
 '''
 
-
+'''
 def visualise_tree(tree_to_print):
     plt.figure()
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(10, 10), dpi=800)
@@ -143,7 +143,7 @@ def visualise_tree(tree_to_print):
 
 for index in range(0, 5):
     visualise_tree(clf.estimators_[index])
-
+'''
 # [1] https://scikit-image.org/docs/dev/user_guide/getting_started.html
 # [2] https://analyticsindiamag.com/image-feature-extraction-using-scikit-image-a-hands-on-guide/
 # [3] From Task 3.9 lab exercises
