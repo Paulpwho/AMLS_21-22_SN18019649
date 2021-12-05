@@ -1,3 +1,5 @@
+import time
+
 import pandas as pd
 from skimage import io
 from skimage.exposure import histogram
@@ -70,14 +72,20 @@ def PCAPredict(X, k):
 
 # project
 
-comp_arr = range(5, 50)
+comp_arr = range(5, 50, 1)
 recall_arr = []
 spec_arr = []
+PCA_on = True
 
 for k1 in comp_arr:
-    Vcomponent = PCAPredict(im, k1)
+    # tic = time.perf_counter() [4]
+    if PCA_on:
+        Vcomponent = PCAPredict(im, k1)
 
-    X = pd.DataFrame(Vcomponent)
+        X = pd.DataFrame(Vcomponent)
+    else:
+        X = pd.DataFrame(im)
+
     Y = mri_labels["label"]
 
     print("Splitting data")
@@ -90,6 +98,8 @@ for k1 in comp_arr:
 
     y_pred = clf.predict(xTest)
 
+    # toc = time.perf_counter()
+
     # print(f'Test feature {np.array(xTest.iloc[0])}\n True class {yTest.iloc[0]}\n predict class {y_pred[0]}')
 
     # print(confusion_matrix(yTest, y_pred))
@@ -99,12 +109,14 @@ for k1 in comp_arr:
     spec = recall_score(yTest, y_pred, pos_label=0)
     spec_arr.append(spec)
     print("Components: " + str(k1))
+    # print(toc-tic)
     # print('Accuracy on test set: ' + str(accuracy_score(yTest, yPred)))
     # print(classification_report(yTest, y_pred))  # text report showing the main classification metrics
 plt.figure()
 plt.plot(comp_arr, recall_arr)
 plt.xlabel("Number of principle components")
 plt.ylabel("Recall")
+plt.ylim(0, 1)
 plt.grid()
 plt.show()
 print("done")
@@ -167,3 +179,4 @@ for index in range(0, 5):
 # [1] https://scikit-image.org/docs/dev/user_guide/getting_started.html
 # [2] https://analyticsindiamag.com/image-feature-extraction-using-scikit-image-a-hands-on-guide/
 # [3] From Task 3.9 lab exercises
+# [4] https://realpython.com/python-timer/
