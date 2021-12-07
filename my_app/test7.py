@@ -118,12 +118,18 @@ y_pred = base_model.predict(xTest)
 # print(f'Test feature {np.array(xTest.iloc[0])}\n True class {yTest.iloc[0]}\n predict class {y_pred[0]}')
 
 # print(confusion_matrix(yTest, y_pred))
-print("Base model recall: " + str(recall_score(yTest, y_pred)))
-print("Base model specificity: " + str(recall_score(yTest, y_pred, pos_label=0)))
+recall_base = recall_score(yTest, y_pred)
+print("Base model recall: " + str(recall_base))
+spec_base = recall_score(yTest, y_pred, pos_label=0)
+print("Base model specificity: " + str(spec_base))
 
+recall_tuned = recall_score(yTest, y_pred_hyperparams)
+print("Tuned model recall: " + str(recall_tuned))
+spec_tuned = recall_score(yTest, y_pred_hyperparams, pos_label=0)
+print("Tuned model specificity: " + str(spec_tuned))
 
-print("Tuned model recall: " + str(recall_score(yTest, y_pred_hyperparams)))
-print("Tuned model specificity: " + str(recall_score(yTest, y_pred_hyperparams, pos_label=0)))
+print("Improvement in recall: {:0.2f}%".format(100 * (recall_tuned - recall_base) / recall_base))
+print("Improvement in specificity: {:0.2f}%".format(100 * (spec_tuned - spec_base) / spec_base))
 
 print("done")
 
