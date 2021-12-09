@@ -93,7 +93,7 @@ clf = RandomForestClassifier(n_estimators=100)
 
 # [5] - hyperparamter tuning
 # Number of trees in random forest
-n_estimators = [int(x) for x in np.linspace(start=100, stop=2000, num=10)]
+n_estimators = [int(x) for x in np.linspace(start=200, stop=2000, num=10)]
 max_features = ['auto', 'sqrt']
 max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
 max_depth.append(None)
