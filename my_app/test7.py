@@ -93,13 +93,25 @@ clf = RandomForestClassifier(n_estimators=100)
 
 # [5] - hyperparamter tuning
 # Number of trees in random forest
-n_estimators = [int(x) for x in np.linspace(start=200, stop=2000, num=10)]
-random_grid = {'n_estimators': n_estimators}
+n_estimators = [int(x) for x in np.linspace(start=100, stop=2000, num=10)]
+max_features = ['auto', 'sqrt']
+max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
+max_depth.append(None)
+min_samples_split = [2, 5, 10]
+min_samples_leaf = [1, 2, 4]
+bootstrap = [True, False]
+
+random_grid = {'n_estimators': n_estimators,
+               'max_features': max_features,
+               'max_depth': max_depth,
+               'min_samples_split': min_samples_split,
+               'min_samples_leaf': min_samples_leaf,
+               'bootstrap': bootstrap}
 
 clf_random = RandomizedSearchCV(estimator=clf,
                                 param_distributions=random_grid,
-                                n_iter=100,
-                                cv=3,
+                                n_iter=100, # number of differnt combinati to try
+                                cv=3, # number of folds to use for cross validation
                                 verbose=2,
                                 random_state=42,
                                 n_jobs=-1)
