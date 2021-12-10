@@ -17,7 +17,6 @@ from PIL import Image
 from sklearn.preprocessing import MinMaxScaler
 from sklearn_evaluation import plot
 
-
 image_h = 512
 image_w = 512
 
@@ -141,10 +140,10 @@ print("Tuned model specificity: " + str(spec_tuned))
 print("Improvement in recall: {:0.2f}%".format(100 * (recall_tuned - recall_base) / recall_base))
 print("Improvement in specificity: {:0.2f}%".format(100 * (spec_tuned - spec_base) / spec_base))
 
-plot.grid_search(clf_grid.cv_results_, change='n_estimators', kind='bar')
+ax = plot.grid_search(clf_grid.cv_results_, change='n_estimators', kind='bar')
 
-matplotlib.pyplot.show()
-
+fig = ax.get_figure()
+fig.savefig('gridsearchtest8.png')
 print("done")
 
 '''
