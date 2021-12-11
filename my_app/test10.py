@@ -117,7 +117,7 @@ print("Recall (Seen data): " + str(recall_base))
 print(confusion_matrix(yTrain, y_pred))
 
 recall_base = recall_score(yTest, y_pred1)
-print("Recall (Uneen data): " + str(recall_base))
+print("Recall (Unseen data): " + str(recall_base))
 print(confusion_matrix(yTest, y_pred1))
 
 #  plot datapoints according to their cluster labels
