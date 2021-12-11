@@ -100,7 +100,7 @@ k2 = 2
 # sklearn functions implementation
 # the bulit-in function for K-means,
 # where n_clusters is the number of clusters.
-kmeans = KMeans(n_clusters=k2)
+kmeans = KMeans(n_clusters=k2, random_state=0)
 # fit the algorithm with dataset
 kmeans.fit(xTrain)
 # predict after fit
@@ -136,11 +136,9 @@ for a in range(len(X.columns.values.tolist())-1):
     plt.xlabel("Feature X[" + str(a) + "]")
     plt.ylabel("Feature X[" + str(b) + "]")
     plt.title("Plot of Feature X[" + str(a) + "] against X[" + str(b) + "] ")
-    try:
-        plt.show()
-    except:
-        plt.savefig("kmeans" + str(b) + ".png")
-        plt.clf()
+    #plt.show()
+    plt.savefig("kmeans" + str(b) + ".png")
+    plt.clf()
 
 
 print("done")

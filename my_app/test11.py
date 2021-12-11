@@ -96,7 +96,7 @@ for k1 in comp_arr:
     # sklearn functions implementation
     # the bulit-in function for K-means,
     # where n_clusters is the number of clusters.
-    kmeans = KMeans(n_clusters=k1)
+    kmeans = KMeans(n_clusters=k1, random_state=0)
     # fit the algorithm with dataset
     kmeans.fit(xTrain)
     # predict after fit
