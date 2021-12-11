@@ -94,34 +94,31 @@ print("Splitting data")
 xTrain, xTest, yTrain, yTest = train_test_split(X, Y)
 
 # [6]
-# sklearn functions implementation
-def kmeansPredict(X, k):
-    '''
-    Inputs
-        X: dataset;
-        k: number of clusters.
-
-    Return
-        y_kmeans: predicted cluster label;
-        centers: cluster centers.
-    '''
-
-    # the bulit-in function for K-means,
-    # where n_clusters is the number of clusters.
-    kmeans = KMeans(n_clusters=k)
-    # fit the algorithm with dataset
-    kmeans.fit(X)
-    # predict after fit
-    y_kmeans = kmeans.predict(X)
-    # get the centers after fit
-    centers = kmeans.cluster_centers_
-
-    return y_kmeans, centers
-
-
 # run K-means for different values of k, which is 3 in following case
 k2 = 2
-y_predict, centers = kmeansPredict(xTrain, k2)
+########## Training ##########
+# sklearn functions implementation
+# the bulit-in function for K-means,
+# where n_clusters is the number of clusters.
+kmeans = KMeans(n_clusters=k2)
+# fit the algorithm with dataset
+kmeans.fit(xTrain)
+# predict after fit
+y_pred = kmeans.predict(xTrain)
+# get the centers after fit
+centers = kmeans.cluster_centers_
+
+######### Predict on Unseen data ###########
+y_pred1 = kmeans.predict((xTest))
+
+# racell scaore
+recall_base = recall_score(yTrain, y_pred)
+print("Recall (Seen data): " + str(recall_base))
+print(confusion_matrix(yTrain, y_pred))
+
+recall_base = recall_score(yTest, y_pred1)
+print("Recall (Uneen data): " + str(recall_base))
+print(confusion_matrix(yTest, y_pred1))
 
 #  plot datapoints according to their cluster labels
 for a in range(len(X.columns.values.tolist())-1):
