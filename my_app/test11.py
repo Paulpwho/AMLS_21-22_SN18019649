@@ -3,6 +3,7 @@ import time
 import pandas as pd
 from skimage import io
 from skimage.exposure import histogram
+from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -72,7 +73,7 @@ def PCAPredict(X, k):
 
 # project
 
-comp_arr = range(5, 50, 1)
+comp_arr = range(2, 6)
 recall_arr = []
 spec_arr = []
 PCA_on = True
@@ -80,7 +81,7 @@ PCA_on = True
 for k1 in comp_arr:
     # tic = time.perf_counter() [4]
     if PCA_on:
-        Vcomponent = PCAPredict(im, k1)
+        Vcomponent = PCAPredict(im, 5)
 
         X = pd.DataFrame(Vcomponent)
     else:
@@ -91,35 +92,66 @@ for k1 in comp_arr:
     print("Splitting data")
     xTrain, xTest, yTrain, yTest = train_test_split(X, Y)
 
-    # From lecture notes task 4.6
-    clf = RandomForestClassifier(n_estimators=100)
+    ########## Training ##########
+    # sklearn functions implementation
+    # the bulit-in function for K-means,
+    # where n_clusters is the number of clusters.
+    kmeans = KMeans(n_clusters=k1)
+    # fit the algorithm with dataset
+    kmeans.fit(xTrain)
+    # predict after fit
+    y_pred = kmeans.predict(xTrain)
+    # get the centers after fit
+    centers = kmeans.cluster_centers_
 
-    clf.fit(xTrain, yTrain)
+    ######### Predict on Unseen data ###########
+    y_pred1 = kmeans.predict((xTest))
 
-    y_pred = clf.predict(xTest)
+    #### Step 1 - Visualise data ###
+    for a in range(len(X.columns.values.tolist()) - 2):
+        b = a + 1
+        plt.scatter(X[a], X[b], c=Y, s=50, alpha=0.5, cmap='viridis')
+        plt.scatter(centers[:, a], centers[:, b], c='red', s=200);
+        # [5]
+        for i, txt in enumerate(centers):
+            plt.annotate(i, (centers[i, a], centers[i, b]))
+        #    custom_lines = [Line2D([0], [0], color=matplotlib.rcParams["axes.prop_cycle"], cmap='viridis', lw=4),
+        #                    Line2D([0], [0], color=matplotlib.rcParams["axes.prop_cycle"], cmap='viridis', lw=4)]
+        #    plt.legend(custom_lines, ["tumour", "no tumour"])
+        plt.xlabel("Feature X[" + str(a) + "]")
+        plt.ylabel("Feature X[" + str(b) + "]")
+        plt.title(str(k1) + " clusters: Plot of Feature X[" + str(a)
+                  + "] against X[" + str(b) + "]")
+        plt.show()
 
-    # toc = time.perf_counter()
-
-    # print(f'Test feature {np.array(xTest.iloc[0])}\n True class {yTest.iloc[0]}\n predict class {y_pred[0]}')
-
-    # print(confusion_matrix(yTest, y_pred))
-    recall = recall_score(yTest, y_pred)
-    recall_arr.append(recall)
-
-    spec = recall_score(yTest, y_pred, pos_label=0)
-    spec_arr.append(spec)
-    print("Components: " + str(k1))
-    # print(toc-tic)
-    # print('Accuracy on test set: ' + str(accuracy_score(yTest, yPred)))
-    # print(classification_report(yTest, y_pred))  # text report showing the main classification metrics
-plt.figure()
-plt.plot(comp_arr, recall_arr)
-plt.xlabel("Number of principle components")
-plt.ylabel("Recall")
-plt.ylim(0, 1)
-plt.grid()
-plt.show()
-print("done")
+    # ######### recall score  #########
+    # recall_base = recall_score(yTrain, y_pred)
+    # print("Recall (Seen data): " + str(recall_base))
+    # spec_base = recall_score(yTrain, y_pred, pos_label=0)
+    # print("Specificity (Unseen data): " + str(spec_tuned))
+    # print(confusion_matrix(yTrain, y_pred))
+    #
+    # recall_tuned = recall_score(yTest, y_pred1)
+    # print("Recall (Unseen data): " + str(recall_tuned))
+    # spec_tuned = recall_score(yTest, y_pred1, pos_label=0)
+    # print("Specificity (Unseen data): " + str(spec_tuned))
+    # print(confusion_matrix(yTest, y_pred1))
+    #
+    # #add score to arrays
+    # recall_arr.append(recall_tuned)
+    # spec_arr.append(spec_tuned)
+    # print("Num clusters: " + str(k1))
+    # # print(toc-tic)
+    # # print('Accuracy on test set: ' + str(accuracy_score(yTest, yPred)))
+    # # print(classification_report(yTest, y_pred))  # text report showing the main classification metrics
+# plt.figure()
+# plt.plot(comp_arr, recall_arr)
+# plt.xlabel("Number of clusters")
+# plt.ylabel("Recall")
+# plt.ylim(0, 1)
+# plt.grid()
+# plt.show()
+# print("done")
 
 '''
 X = pd.DataFrame(Vcomponent, columns=['principal component 1', 'principal component 2'])
@@ -180,3 +212,4 @@ for index in range(0, 5):
 # [2] https://analyticsindiamag.com/image-feature-extraction-using-scikit-image-a-hands-on-guide/
 # [3] From Task 3.9 lab exercises
 # [4] https://realpython.com/python-timer/
+# [5] https://stackoverflow.com/questions/14432557/matplotlib-scatter-plot-with-different-text-at-each-data-point
