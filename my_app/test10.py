@@ -3,8 +3,10 @@ from collections import OrderedDict
 
 import matplotlib
 import pandas as pd
+from matplotlib.lines import Line2D
 from skimage import io
 from skimage.exposure import histogram
+from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, RandomizedSearchCV, GridSearchCV, validation_curve
@@ -92,11 +94,48 @@ print("Splitting data")
 xTrain, xTest, yTrain, yTest = train_test_split(X, Y)
 
 # [6]
-#  plot datapoints according to their cluster labels
-plt.scatter(X[0], X[1], c=Y, s=50, alpha=0.5, cmap='viridis')
+# sklearn functions implementation
+def kmeansPredict(X, k):
+    '''
+    Inputs
+        X: dataset;
+        k: number of clusters.
 
-#  plot true cluster centers using color 'blue'
-plt.scatter(true_centers[:, 0], true_centers[:, 1], c='blue', s=200);
+    Return
+        y_kmeans: predicted cluster label;
+        centers: cluster centers.
+    '''
+
+    # the bulit-in function for K-means,
+    # where n_clusters is the number of clusters.
+    kmeans = KMeans(n_clusters=k)
+    # fit the algorithm with dataset
+    kmeans.fit(X)
+    # predict after fit
+    y_kmeans = kmeans.predict(X)
+    # get the centers after fit
+    centers = kmeans.cluster_centers_
+
+    return y_kmeans, centers
+
+
+# run K-means for different values of k, which is 3 in following case
+k2 = 2
+y_predict, centers = kmeansPredict(xTrain, k2)
+
+#  plot datapoints according to their cluster labels
+for a in range(len(X.columns.values.tolist())-1):
+    b = a + 1
+    plt.scatter(X[a], X[b], c=Y, s=50, alpha=0.5, cmap='viridis')
+    plt.scatter(centers[:, a], centers[:, b], c='red', s=200);
+#    custom_lines = [Line2D([0], [0], color=matplotlib.rcParams["axes.prop_cycle"], cmap='viridis', lw=4),
+#                    Line2D([0], [0], color=matplotlib.rcParams["axes.prop_cycle"], cmap='viridis', lw=4)]
+#    plt.legend(custom_lines, ["tumour", "no tumour"])
+    plt.xlabel("Feature X[" + str(a) + "]")
+    plt.ylabel("Feature X[" + str(b) + "]")
+    plt.title("PLot of Feature X[" + str(a) + "] against X[" + str(b) + "] ")
+    plt.show()
+
 
 print("done")
 
