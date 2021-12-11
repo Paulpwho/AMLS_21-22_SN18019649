@@ -136,7 +136,11 @@ for a in range(len(X.columns.values.tolist())-1):
     plt.xlabel("Feature X[" + str(a) + "]")
     plt.ylabel("Feature X[" + str(b) + "]")
     plt.title("Plot of Feature X[" + str(a) + "] against X[" + str(b) + "] ")
-    plt.show()
+    try:
+        plt.show()
+    except:
+        plt.savefig("kmeans" + str(b) + ".png")
+        plt.clf()
 
 
 print("done")
