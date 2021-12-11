@@ -111,7 +111,7 @@ centers = kmeans.cluster_centers_
 ######### Predict on Unseen data ###########
 y_pred1 = kmeans.predict((xTest))
 
-# racell scaore
+# recall score
 recall_base = recall_score(yTrain, y_pred)
 print("Recall (Seen data): " + str(recall_base))
 print(confusion_matrix(yTrain, y_pred))
@@ -128,9 +128,14 @@ for a in range(len(X.columns.values.tolist())-1):
 #    custom_lines = [Line2D([0], [0], color=matplotlib.rcParams["axes.prop_cycle"], cmap='viridis', lw=4),
 #                    Line2D([0], [0], color=matplotlib.rcParams["axes.prop_cycle"], cmap='viridis', lw=4)]
 #    plt.legend(custom_lines, ["tumour", "no tumour"])
+    for i, txt in enumerate(centers):
+        plt.annotate(i, (centers[i, a], centers[i, b]))
+    #    custom_lines = [Line2D([0], [0], color=matplotlib.rcParams["axes.prop_cycle"], cmap='viridis', lw=4),
+    #                    Line2D([0], [0], color=matplotlib.rcParams["axes.prop_cycle"], cmap='viridis', lw=4)]
+    #    plt.legend(custom_lines, ["tumour", "no tumour"])
     plt.xlabel("Feature X[" + str(a) + "]")
     plt.ylabel("Feature X[" + str(b) + "]")
-    plt.title("PLot of Feature X[" + str(a) + "] against X[" + str(b) + "] ")
+    plt.title("Plot of Feature X[" + str(a) + "] against X[" + str(b) + "] ")
     plt.show()
 
 
