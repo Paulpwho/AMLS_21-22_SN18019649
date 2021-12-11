@@ -91,53 +91,12 @@ Y = mri_labels["label"]
 print("Splitting data")
 xTrain, xTest, yTrain, yTest = train_test_split(X, Y)
 
-# From lecture notes task 4.6
-# tuned model
+# [6]
+#  plot datapoints according to their cluster labels
+plt.scatter(X[0], X[1], c=Y, s=50, alpha=0.5, cmap='viridis')
 
-ensemble_clfs = [
-    (
-        "RandomForestClassifier, max_features=3",
-        RandomForestClassifier(
-            warm_start=True,
-            max_features=3,
-            oob_score=True,
-            max_depth=40,
-            min_samples_leaf=2,
-            min_samples_split=2,
-        ),
-    ),
-]
-# y_pred = tuned_model.predict(xTest)
-
-# from [6]
-# Map a classifier name to a list of (<n_estimators>, <error rate>) pairs.
-error_rate = OrderedDict((label, []) for label, _ in ensemble_clfs)
-
-# Range of `n_estimators` values to explore.
-min_estimators = 1600
-max_estimators = 2000
-
-for label, clf in ensemble_clfs:
-    for i in range(min_estimators, max_estimators+50, 50):
-        clf.set_params(n_estimators=i)
-        clf.fit(X, Y)
-
-        # Record the OOB error for each `n_estimators=i` setting.
-        oob_error = 1 - clf.oob_score_
-        error_rate[label].append((i, oob_error))
-
-# Generate the "OOB error rate" vs. "n_estimators" plot.
-for label, clf_err in error_rate.items():
-    xs, ys = zip(*clf_err)
-    plt.plot(xs, ys, label=label)
-
-
-
-plt.xlim(min_estimators, max_estimators)
-plt.xlabel("n_estimators")
-plt.ylabel("OOB error rate")
-plt.legend(loc="upper right")
-plt.show()
+#  plot true cluster centers using color 'blue'
+plt.scatter(true_centers[:, 0], true_centers[:, 1], c='blue', s=200);
 
 print("done")
 
@@ -200,4 +159,4 @@ for index in range(0, 5):
 # [3] From Task 3.9 lab exercises
 # [4] https://realpython.com/python-timer/
 # [5] https://towardsdatascience.com/hyperparameter-tuning-the-random-forest-in-python-using-scikit-learn-28d2aa77dd74
-# [6] https://scikit-learn.org/stable/auto_examples/ensemble/plot_ensemble_oob.html
+# [6] From Task 5.13 Lab tasks
