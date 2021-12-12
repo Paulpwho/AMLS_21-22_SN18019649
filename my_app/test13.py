@@ -23,7 +23,8 @@ hist_size = 256
 
 mri_labels = pd.read_csv(labels_path)
 
-lab = True
+lab = True # Replace string labels with int labels?
+plot_graph = True # plot an svm graph? (Takes a long time)
 
 if lab:
     mri_labels["label"][mri_labels["label"] == "no_tumor"] = 0
@@ -107,10 +108,6 @@ print(confusion_matrix(yTest, y_pred))
 print(classification_report(yTest, y_pred))
 
 ### Visualise the SVM ###
-fig, sub = plt.subplots(1)
-plt.subplots_adjust(wspace=0.4, hspace=0.4)
-X0, X1, X2, X3, X4 = X[0], X[1], X[2], X[3], X[4]
-
 def make_meshgrid(x, y, a, b, c, h=.5):
 
     x_min, x_max = x.min() - 1, x.max() + 1
@@ -125,27 +122,33 @@ def make_meshgrid(x, y, a, b, c, h=.5):
                                      np.arange(c_min, c_max, h))
     return xx, yy, aa, bb, cc
 
-print("Making meshgrid")
-xx, yy, aa, bb, cc = make_meshgrid(X0, X1, X2, X3, X4)
-
 def plot_contours(ax, clf, xx, yy, aa, bb, cc, **params):
 
     Z = clf.predict(np.c_[xx.ravel(), yy.ravel(), aa.ravel(), bb.ravel(), cc.ravel()])
     Z = Z.reshape(xx.shape)
     out = ax.contourf(xx[:, :, 9, 9, 9], yy[:, :, 9, 9, 9], Z[:, :, 9, 9, 9], **params)
     return out
-print("Plotting graph")
-plot_contours(sub, model, xx, yy, aa, bb, cc, cmap=plt.cm.coolwarm, alpha=0.8)
-sub.scatter(X0, X1, c=Y, cmap=plt.cm.coolwarm, s=20, edgecolors='k')
-sub.set_xlim(xx.min(), xx.max())
-sub.set_ylim(yy.min(), yy.max())
-sub.set_xlabel('Principal Component X0')
-sub.set_ylabel('Principal Component X1')
-sub.set_xticks(())
-sub.set_yticks(())
-sub.set_title("SVC default settings")
-plt.savefig("test13_SVC.png")
-plt.clf()
+
+if plot_graph:
+    fig, sub = plt.subplots(1)
+    plt.subplots_adjust(wspace=0.4, hspace=0.4)
+    X0, X1, X2, X3, X4 = X[0], X[1], X[2], X[3], X[4]
+
+    print("Making meshgrid")
+    xx, yy, aa, bb, cc = make_meshgrid(X0, X1, X2, X3, X4)
+
+    print("Plotting graph")
+    plot_contours(sub, model, xx, yy, aa, bb, cc, cmap=plt.cm.coolwarm, alpha=0.8)
+    sub.scatter(X0, X1, c=Y, cmap=plt.cm.coolwarm, s=20, edgecolors='k')
+    sub.set_xlim(xx.min(), xx.max())
+    sub.set_ylim(yy.min(), yy.max())
+    sub.set_xlabel('Principal Component X0')
+    sub.set_ylabel('Principal Component X1')
+    sub.set_xticks(())
+    sub.set_yticks(())
+    sub.set_title("SVC default settings")
+    plt.savefig("test13_SVC.png")
+    plt.clf()
 # recall_base = recall_score(yTest, y_pred, average = None)
 # print("Base model recall: " + str(recall_base))
 # spec_base = recall_score(yTest, y_pred, pos_label=0, average = None)
