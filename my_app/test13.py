@@ -22,10 +22,15 @@ image_path = './datasets/image/'
 hist_size = 256
 
 mri_labels = pd.read_csv(labels_path)
-# mri_labels["label"][mri_labels["label"] == "no_tumor"] = 0
-# mri_labels["label"][mri_labels["label"] == "meningioma_tumor"] = 1
-# mri_labels["label"][mri_labels["label"] == "glioma_tumor"] = 2
-# mri_labels["label"][mri_labels["label"] == "pituitary_tumor"] = 3
+
+lab = True
+
+if lab:
+    mri_labels["label"][mri_labels["label"] == "no_tumor"] = 0
+    mri_labels["label"][mri_labels["label"] == "meningioma_tumor"] = 1
+    mri_labels["label"][mri_labels["label"] == "glioma_tumor"] = 2
+    mri_labels["label"][mri_labels["label"] == "pituitary_tumor"] = 3
+
 # no_tumour = 1, tumour = 0
 print(mri_labels)
 
@@ -86,28 +91,65 @@ Y = mri_labels["label"]
 
 # As SVM tries to identify numpy dtype=object as multiclass, you need to convert it into this, or alternatively, a list
 # as per [5]'s recommendation
-# Y = Y.astype('int')
+if lab:
+    Y = Y.astype('int')
 
 print("Splitting data")
 xTrain, xTest, yTrain, yTest = train_test_split(X, Y)
 
 # [4]
-def SVM(x_train,y_train, x_test):
-    model = SVC()
-    model.fit(x_train, y_train)
-    #model.  #fit using x_train and y_train
-    y_pred = model.predict(x_test)
-    return y_pred
-# Scikit learn library results
-y_pred=SVM(xTrain, yTrain, xTest)
+model = SVC()
+model.fit(xTrain, yTrain)
+#model.  #fit using x_train and y_train
+y_pred = model.predict(xTest)
 
 print(confusion_matrix(yTest, y_pred))
 print(classification_report(yTest, y_pred))
 
-recall_base = recall_score(yTest, y_pred, average = None)
-print("Base model recall: " + str(recall_base))
-spec_base = recall_score(yTest, y_pred, pos_label=0, average = None)
-print("Base model specificity: " + str(spec_base))
+### Visualise the SVM ###
+fig, sub = plt.subplots(1)
+plt.subplots_adjust(wspace=0.4, hspace=0.4)
+X0, X1, X2, X3, X4 = X[0], X[1], X[2], X[3], X[4]
+
+def make_meshgrid(x, y, a, b, c, h=.5):
+
+    x_min, x_max = x.min() - 1, x.max() + 1
+    y_min, y_max = y.min() - 1, y.max() + 1
+    a_min, a_max = a.min() - 1, a.max() + 1
+    b_min, b_max = b.min() - 1, b.max() + 1
+    c_min, c_max = c.min() - 1, c.max() + 1
+    xx, yy, aa, bb, cc = np.meshgrid(np.arange(x_min, x_max, h),
+                                     np.arange(y_min, y_max, h),
+                                     np.arange(a_min, a_max, h),
+                                     np.arange(b_min, b_max, h),
+                                     np.arange(c_min, c_max, h))
+    return xx, yy, aa, bb, cc
+
+print("Making meshgrid")
+xx, yy, aa, bb, cc = make_meshgrid(X0, X1, X2, X3, X4)
+
+def plot_contours(ax, clf, xx, yy, aa, bb, cc, **params):
+
+    Z = clf.predict(np.c_[xx.ravel(), yy.ravel(), aa.ravel(), bb.ravel(), cc.ravel()])
+    Z = Z.reshape(xx.shape)
+    out = ax.contourf(xx[:, :, 9, 9, 9], yy[:, :, 9, 9, 9], Z[:, :, 9, 9, 9], **params)
+    return out
+print("Plotting graph")
+plot_contours(sub, model, xx, yy, aa, bb, cc, cmap=plt.cm.coolwarm, alpha=0.8)
+sub.scatter(X0, X1, c=Y, cmap=plt.cm.coolwarm, s=20, edgecolors='k')
+sub.set_xlim(xx.min(), xx.max())
+sub.set_ylim(yy.min(), yy.max())
+sub.set_xlabel('Principal Component X0')
+sub.set_ylabel('Principal Component X1')
+sub.set_xticks(())
+sub.set_yticks(())
+sub.set_title("SVC default settings")
+plt.savefig("test13_SVC.png")
+plt.clf()
+# recall_base = recall_score(yTest, y_pred, average = None)
+# print("Base model recall: " + str(recall_base))
+# spec_base = recall_score(yTest, y_pred, pos_label=0, average = None)
+# print("Base model specificity: " + str(spec_base))
 
 print("done")
 '''
