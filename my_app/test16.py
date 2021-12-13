@@ -105,19 +105,19 @@ linear_param_grid = {
 }
 
 poly_param_grid = {
-    'C': [x for x in np.logspace(-5, 4, num = 10)],
-    'degree': [int(x) for x in np.linspace(1, 10, num = 10)],
-    'gamma': [x for x in np.logspace(-5, 4, num = 10)]
+    'C': [x for x in np.logspace(-5, 2, num = 8)],
+    'degree': [int(x) for x in np.linspace(3, 5, num = 4)],
+    'gamma': [x for x in np.logspace(-5, 2, num = 8)]
 }
 
 rbf_param_grid = {
-    'C': [x for x in np.logspace(-5, 4, num = 10)],
-    'gamma': [x for x in np.logspace(-5, 4, num = 10)]
+    'C': [x for x in np.logspace(-5, 5, num = 11)],
+    'gamma': [x for x in np.logspace(-5, 5, num = 11)]
 }
 
 sigmoid_param_grid = {
-    'C': [x for x in np.logspace(-5, 4, num = 10)],
-    'gamma': [x for x in np.logspace(-5, 4, num = 10)]
+    'C': [x for x in np.logspace(-5, 5, num = 11)],
+    'gamma': [x for x in np.logspace(-5, 5, num = 11)]
 }
 
 param_arr = [linear_param_grid,
@@ -140,7 +140,7 @@ clf_random = RandomizedSearchCV(estimator=model,
                                 n_iter=100,  # number of differnt combinati to try
                                 cv=3,  # number of folds to use for cross validation
                                 verbose=2,
-                                random_state=42,
+                                # random_state=42,
                                 n_jobs=-1)
 
 clf_random.fit(xTrain, yTrain)
