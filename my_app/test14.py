@@ -23,7 +23,7 @@ hist_size = 256
 
 mri_labels = pd.read_csv(labels_path)
 
-lab = True # Replace string labels with int labels?
+lab = False # Replace string labels with int labels?
 plot_graph = False # plot an svm graph? (Takes a long time)
 
 if lab:
@@ -76,36 +76,53 @@ def PCAPredict(X, k):
 
 
 # project
-k1 = 5
+comp_arr = range(1, 75, 1)
 recall_arr = []
 spec_arr = []
 PCA_on = True
 
-if PCA_on:
-    Vcomponent = PCAPredict(im, k1)
+for k1 in comp_arr:
+    print("Components: " + str(k1))
+    if PCA_on:
+        Vcomponent = PCAPredict(im, k1)
 
-    X = pd.DataFrame(Vcomponent)
-else:
-    X = pd.DataFrame(im)
+        X = pd.DataFrame(Vcomponent)
+    else:
+        X = pd.DataFrame(im)
 
-Y = mri_labels["label"]
+    Y = mri_labels["label"]
 
-# As SVM tries to identify numpy dtype=object as multiclass, you need to convert it into this, or alternatively, a list
-# as per [5]'s recommendation
-if lab:
-    Y = Y.astype('int')
+    # As SVM tries to identify numpy dtype=object as multiclass, you need to convert it into this, or alternatively, a list
+    # as per [5]'s recommendation
+    if lab:
+        Y = Y.astype('int')
 
-print("Splitting data")
-xTrain, xTest, yTrain, yTest = train_test_split(X, Y)
+    print("Splitting data")
+    xTrain, xTest, yTrain, yTest = train_test_split(X, Y)
 
-# [4]
-model = SVC()
-model.fit(xTrain, yTrain)
-#model.  #fit using x_train and y_train
-y_pred = model.predict(xTest)
+    # [4]
+    model = SVC()
+    model.fit(xTrain, yTrain)
+    # model.  #fit using x_train and y_train
+    y_pred = model.predict(xTest)
 
-print(confusion_matrix(yTest, y_pred))
-print(classification_report(yTest, y_pred))
+    #print(confusion_matrix(yTest, y_pred))
+    #print(classification_report(yTest, y_pred))
+    recall = recall_score(yTest, y_pred, average=None)
+    recall_arr.append(recall)
+
+### Visualise PCA hyperparameter tuning ###
+plt.figure()
+plt.plot(comp_arr, recall_arr)
+plt.xlabel("Number of principle components")
+plt.ylabel("Recall")
+plt.ylim(0, 1)
+plt.grid()
+plt.legend(["glioma_tumor", "meningioma_tumor", "no_tumor", "pituitary_tumor"])
+plt.title("Effect on SVM recall while increasing the number of PCA components")
+#plt.show()
+plt.savefig("PCA_tuning_test14.png")
+plt.clf()
 
 ### Visualise the SVM ###
 def make_meshgrid(x, y, a, b, c, h=.5):
@@ -147,7 +164,7 @@ if plot_graph:
     sub.set_xticks(())
     sub.set_yticks(())
     sub.set_title("SVC default settings")
-    plt.savefig("test13_SVC.png")
+    plt.savefig("test14_SVC.png")
     plt.clf()
 # recall_base = recall_score(yTest, y_pred, average = None)
 # print("Base model recall: " + str(recall_base))
