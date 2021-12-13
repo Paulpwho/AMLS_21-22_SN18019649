@@ -101,23 +101,23 @@ xTrain, xTest, yTrain, yTest = train_test_split(X, Y)
 
 # Creating param grid
 linear_param_grid = {
-    'C': [x for x in np.logspace(-5, 5, num = 10)],
+    'C': [x for x in np.logspace(-5, 4, num = 10)],
 }
 
 poly_param_grid = {
-    'C': [x for x in np.logspace(-5, 5, num = 10)],
+    'C': [x for x in np.logspace(-5, 4, num = 10)],
     'degree': [int(x) for x in np.linspace(1, 10, num = 10)],
-    'gamma': [x for x in np.logspace(-5, 5, num = 10)]
+    'gamma': [x for x in np.logspace(-5, 4, num = 10)]
 }
 
 rbf_param_grid = {
-    'C': [x for x in np.logspace(-5, 5, num = 10)],
-    'gamma': [x for x in np.logspace(-5, 5, num = 10)]
+    'C': [x for x in np.logspace(-5, 4, num = 10)],
+    'gamma': [x for x in np.logspace(-5, 4, num = 10)]
 }
 
 sigmoid_param_grid = {
-    'C': [x for x in np.logspace(-5, 5, num = 10)],
-    'gamma': [x for x in np.logspace(-5, 5, num = 10)]
+    'C': [x for x in np.logspace(-5, 4, num = 10)],
+    'gamma': [x for x in np.logspace(-5, 4, num = 10)]
 }
 
 param_arr = [linear_param_grid,
@@ -126,64 +126,59 @@ param_arr = [linear_param_grid,
              sigmoid_param_grid]
 
 # [4]
-for i in range(4):
-    k = kernel_arr[i]
-    print("kernel: " + k)
-    model = SVC(kernel=k)
-    model.fit(xTrain, yTrain)
-    # model.  #fit using x_train and y_train
-    y_pred = model.predict(xTest)
-    random_grid = param_arr[i]
+i = 1
+k = kernel_arr[i]
+print("kernel: " + k)
+model = SVC(kernel=k)
+model.fit(xTrain, yTrain)
+# model.  #fit using x_train and y_train
+y_pred = model.predict(xTest)
+random_grid = param_arr[i]
 
-    clf_random = RandomizedSearchCV(estimator=model,
-                                    param_distributions=random_grid,
-                                    n_iter=100,  # number of differnt combinati to try
-                                    cv=3,  # number of folds to use for cross validation
-                                    verbose=2,
-                                    random_state=42,
-                                    n_jobs=-1)
+clf_random = RandomizedSearchCV(estimator=model,
+                                param_distributions=random_grid,
+                                n_iter=100,  # number of differnt combinati to try
+                                cv=3,  # number of folds to use for cross validation
+                                verbose=2,
+                                random_state=42,
+                                n_jobs=-1)
 
-    clf_random.fit(xTrain, yTrain)
-    print(clf_random.best_params_)
-    y_pred_hyperparams = clf_random.predict(xTest)
+clf_random.fit(xTrain, yTrain)
+print(clf_random.best_params_)
+y_pred_hyperparams = clf_random.predict(xTest)
 
-    # base model
+# base model
 
-    base_model = model = SVC(kernel=k)
-    base_model.fit(xTrain, yTrain)
+base_model = model = SVC(kernel=k)
+base_model.fit(xTrain, yTrain)
 
-    y_pred = base_model.predict(xTest)
+y_pred = base_model.predict(xTest)
 
-    # print(f'Test feature {np.array(xTest.iloc[0])}\n True class {yTest.iloc[0]}\n predict class {y_pred[0]}')
+# print(f'Test feature {np.array(xTest.iloc[0])}\n True class {yTest.iloc[0]}\n predict class {y_pred[0]}')
 
-    # print(confusion_matrix(yTest, y_pred))
-    recall_base = recall_score(yTest, y_pred)
-    print("Base model recall: " + str(recall_base))
-    spec_base = recall_score(yTest, y_pred, pos_label=0)
-    print("Base model specificity: " + str(spec_base))
+# print(confusion_matrix(yTest, y_pred))
+print("Base Model:")
+print(confusion_matrix(yTest, y_pred))
+print(classification_report(yTest, y_pred))
 
-    recall_tuned = recall_score(yTest, y_pred_hyperparams)
-    print("Tuned model recall: " + str(recall_tuned))
-    spec_tuned = recall_score(yTest, y_pred_hyperparams, pos_label=0)
-    print("Tuned model specificity: " + str(spec_tuned))
+print("Tuned Model:")
+print(confusion_matrix(yTest, y_pred_hyperparams))
+print(classification_report(yTest, y_pred_hyperparams))
 
-    print("Improvement in recall: {:0.2f}%".format(100 * (recall_tuned - recall_base) / recall_base))
-    print("Improvement in specificity: {:0.2f}%".format(100 * (spec_tuned - spec_base) / spec_base))
-
-recall_arr = np.asarray(recall_arr)
-
-### Visualise PCA hyperparameter tuning ###
-classes = ["glioma_tumor", "meningioma_tumor", "no_tumor", "pituitary_tumor"]
-for j in range(4):
-    plt.figure()
-    plt.bar(kernel_arr, recall_arr[:, j], tick_label=classes)
-    plt.ylabel("Recall")
-    plt.ylim(0, 1)
-    plt.grid()
-    plt.title("SVM recall for kernel: " + kernel_arr[j])
-    # plt.show()
-    plt.savefig("bar"+ str(j)+"_test15.png")
-    plt.clf()
+# recall_arr = np.asarray(recall_arr)
+#
+# ### Visualise PCA hyperparameter tuning ###
+# classes = ["glioma_tumor", "meningioma_tumor", "no_tumor", "pituitary_tumor"]
+# for j in range(4):
+#     plt.figure()
+#     plt.bar(kernel_arr, recall_arr[:, j], tick_label=classes)
+#     plt.ylabel("Recall")
+#     plt.ylim(0, 1)
+#     plt.grid()
+#     plt.title("SVM recall for kernel: " + kernel_arr[j])
+#     # plt.show()
+#     plt.savefig("bar"+ str(j)+"_test15.png")
+#     plt.clf()
 
 
 ### Visualise the SVM ###
