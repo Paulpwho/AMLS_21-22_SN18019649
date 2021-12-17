@@ -1,10 +1,34 @@
 # AMLS_21-22_SN18019649
 
 Instructions on how to compile and use your code should be created in the repository
-* A brief introduction of the task.
+* Introduction
+    * The deliverables of the assignment were to develop machine learning models for binary (Task A) and multiclass (Task B) classification.
+    * Prelimiary experiments were carried out to test the feature extraction stage. The classifier used was logistic regression.
+    * For Task A, two classifers were used: Random Forest and K-means clustering.
+    * For Task B, an SVM was used.
 * A brief description of the organization of the files.
+    * All files are in the my_app folder
+    * The dataset and csv labels file are in the datasets folder
+    * All the models are placed in the my_app directory.
 * The role of each file.
+    * test1.py - Threshold + Logistic regression
+    * test2.py - PCA feature extraction testing
+    * test3.py - Histogram feature extraction
+    * test4.py - Inital Random forests testing
+    * test5.py - Intial testing for Task B (logistic regression)
+    * test6.py - PCA investigation: varying the number of components
+    * test7.py - Hyperparameter tuning Random Forest – Random search
+    * test8.py – Hyperparameter tuning Random Forest – Grid search
+    * test9.py – Out of bag error of Random Forest
+    * test10.py – Unsupervised clustering methods – K means
+    * test11.py – K means manual hyperparameter tuning
+    * test12.py – K means automatic hyperparameter tuning
+    * test13.py – SVM inital model
+    * test14.py – SVM with manual hyperparameter tuning
+    * test15.py – Comparting SVMs with different kernel functions
+    * test16.py – Full Automated hyperparameter tuning – Random search
 * How to run your code.
+    * After installing all packages from requirement.txt, all the python programs should be able to run independently. There is no need to run setup.py
 * Necessary packages or header files (N.B. All necessary packages are also listed in the requirements.txt file):
     * datetime
     * numpy
